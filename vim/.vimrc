@@ -48,3 +48,8 @@ call plug#end()
 
 
 let g:deoplete#enable_at_startup = 1
+
+map <silent><C-f>	:NERDTree		<CR>
+map <silent><C-f>	:NERDTreeToggle		<CR>
+
+
