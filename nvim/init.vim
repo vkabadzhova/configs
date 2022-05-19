@@ -1,192 +1,200 @@
-" Add plugins to ~/.vim/pack/vendor/start
-" if you want them to start every time you launch vim
-" e.g. git clone --depth 1 \
-"  https://github.com/preservim/nerdtree.git \
-"  ~/.vim/pack/vendor/start/nerdtree
+let mapleader =","
 
-" Add plugins to ~/.vim/pack/vendor/opt
-" if you don't want them to load into memory automatically,
-" but you want to add them to session with the `packadd` command
-" e.g. `:packadd foo`
+if ! filereadable(system('echo -n "${XDG_CONFIG_HOME:-$HOME/.config}/nvim/autoload/plug.vim"'))
+	echo "Downloading junegunn/vim-plug to manage plugins..."
+	silent !mkdir -p ${XDG_CONFIG_HOME:-$HOME/.config}/nvim/autoload/
+	silent !curl "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" > ${XDG_CONFIG_HOME:-$HOME/.config}/nvim/autoload/plug.vim
+	autocmd VimEnter * PlugInstall
+endif
 
-" definitely install vim-plugin
-" A guide can be found here: https://github.com/junegunn/vim-plug#usage
-
-" The color scheme is added in: ~/.vim/colors/sublimemonokai.vim
-
-if has("syntax")
-  syntax on
-endif       
-
-" ------ miscellenia ----------------
-set number
-set autoindent
-set smartindent
-set mouse=a
-
-" -------- colorschema setup ----------
-" setup
-let g:solarized_termcolors=256
-
-" apply colorschema
-syntax enable
-set background=dark
-colorscheme solarized
-" colorscheme guardian2 
-" -------- end colorschema ------
-
-" ------- Rust --------------
-filetype plugin indent on
-" ------ end Rust -------
-
-call plug#begin()
-Plug 'Shougo/deoplete.nvim'
-Plug 'roxma/nvim-yarp'
-Plug 'roxma/vim-hug-neovim-rpc'
-Plug 'rust-lang/rust.vim'
-"Debugging
-Plug 'puremourning/vimspector'
-" Lightline footer
-Plug 'itchyny/lightline.vim'
-" fuzzy finder
-Plug 'junegunn/fzf'
-Plug 'mhinz/vim-startify'
-"Plug 'ying17zi/vim-live-latex-preview'
-Plug 'lervag/vimtex'
+call plug#begin(system('echo -n "${XDG_CONFIG_HOME:-$HOME/.config}/nvim/plugged"'))
+Plug 'tpope/vim-surround'
+Plug 'junegunn/goyo.vim'
+Plug 'jreybert/vimagit'
+Plug 'lukesmithxyz/vimling'
+Plug 'vimwiki/vimwiki'
+Plug 'vim-airline/vim-airline'
+Plug 'tpope/vim-commentary'
+Plug 'ap/vim-css-color'
+Plug 'preservim/nerdtree'
+Plug 'NLKNguyen/papercolor-theme'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 call plug#end()
 
-
-" =============================================================================
-" # GUI settings
-" =============================================================================
-set guioptions-=T " Remove toolbar
-set vb t_vb= " No more beeps
-set backspace=2 " Backspace over newlines
-set nofoldenable
-set ttyfast
-" https://github.com/vim/vim/issues/1735#issuecomment-383353563
-set lazyredraw
-set synmaxcol=500
-set laststatus=2
-set relativenumber " Relative line numbers
-set number " Also show current absolute line
-set diffopt+=iwhite " No whitespace in vimdiff
-" Make diffing better: https://vimways.org/2018/the-power-of-diff/
-set diffopt+=algorithm:patience
-set diffopt+=indent-heuristic
-set colorcolumn=80 " and give me a colored column
-set showcmd " Show (partial) command in status line.
-set mouse=a " Enable mouse usage (all modes) in terminals
-set shortmess+=c " don't give |ins-completion-menu| messages.
-
-" Show those damn hidden characters
-" Verbose: set listchars=nbsp:¬,eol:¶,extends:»,precedes:«,trail:•
-set listchars=nbsp:¬,extends:»,precedes:«,trail:•
-
-let g:deoplete#enable_at_startup = 1 "completion
-let g:rustfmt_autosave = 1
-
-" You can use 'VISUAL_STUDIO' or 'HUMAN'
-" Visual Studio config avoid to the mapping of <F3> key, sometimes used to map file explorer buffer.
-let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
-
-" =============================================================================
-" # Editor settings
-" =============================================================================
-filetype plugin indent on
-set autoindent
-set timeoutlen=300 " http://stackoverflow.com/questions/2158516/delay-before-o-opens-a-new-line
-set encoding=utf-8
-set scrolloff=2
+set title
+set bg=light
+set go=a
+set mouse=a
+set nohlsearch
+set clipboard+=unnamedplus
 set noshowmode
-set hidden
-set nowrap
-set nojoinspaces
-let g:sneak#s_next = 1
-let g:vim_markdown_new_list_item_indent = 0
-let g:vim_markdown_auto_insert_bullets = 0
-let g:vim_markdown_frontmatter = 1
-set printfont=:h10
-set printencoding=utf-8
-set printoptions=paper:letter
-" Always draw sign column. Prevent buffer moving when adding/deleting sign.
-set signcolumn=yes
+set noruler
+set laststatus=0
+set noshowcmd
 
-" Settings needed for .lvimrc
-set exrc
-set secure
+" Some basics:
+	nnoremap c "_c
+	set nocompatible
+	filetype plugin on
+	syntax on
+	set encoding=utf-8
+	set number relativenumber
+" Enable autocompletion:
+	set wildmode=longest,list,full
+" Perform dot commands over visual blocks:
+	vnoremap . :normal .<CR>
+" Goyo plugin makes text more readable when writing prose:
+	map <leader>f :Goyo \| set bg=light \| set linebreak<CR>
+" Spell-check set to <leader>o, 'o' for 'orthography':
+	map <leader>o :setlocal spell! spelllang=en_us<CR>
+" Splits open at the bottom and right, which is non-retarded, unlike vim defaults.
+	set splitbelow splitright
 
-" Sane splits
-set splitright
-set splitbelow
+" Nerd tree
+	map <leader>n :NERDTreeToggle<CR>
+	autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+    if has('nvim')
+        let NERDTreeBookmarksFile = stdpath('data') . '/NERDTreeBookmarks'
+    else
+        let NERDTreeBookmarksFile = '~/.vim' . '/NERDTreeBookmarks'
+    endif
 
-" Permanent undo
-set undodir=~/.vimdid
-set undofile
+" vimling:
+	nm <leader><leader>d :call ToggleDeadKeys()<CR>
+	imap <leader><leader>d <esc>:call ToggleDeadKeys()<CR>a
+	nm <leader><leader>i :call ToggleIPA()<CR>
+	imap <leader><leader>i <esc>:call ToggleIPA()<CR>a
+	nm <leader><leader>q :call ToggleProse()<CR>
 
-" Decent wildmenu
-set wildmenu
-set wildmode=list:longest
-set wildignore=.hg,.svn,*~,*.png,*.jpg,*.gif,*.settings,Thumbs.db,*.min.js,*.swp,publish/*,intermediate/*,*.o,*.hi,Zend,vendor
+" Shortcutting split navigation, saving a keypress:
+	map <C-h> <C-w>h
+	map <C-j> <C-w>j
+	map <C-k> <C-w>k
+	map <C-l> <C-w>l
 
-" Use wide tabs
-set shiftwidth=8
-set softtabstop=8
-set tabstop=8
-set noexpandtab
+" Replace ex mode with gq
+	map Q gq
 
-" Wrapping options
-set formatoptions=tc " wrap text and comments using textwidth
-set formatoptions+=r " continue comments when pressing ENTER in I mode
-set formatoptions+=q " enable formatting of comments with gq
-set formatoptions+=n " detect lists for formatting
-set formatoptions+=b " auto-wrap in insert mode, and do not wrap old long lines
+" Check file in shellcheck:
+	map <leader>s :!clear && shellcheck -x %<CR>
 
-" Proper search
-set incsearch
-set ignorecase
-set smartcase
-set gdefault
+" Open my bibliography file in split
+	map <leader>b :vsp<space>$BIB<CR>
+	map <leader>r :vsp<space>$REFER<CR>
 
-" Search results centered please
-nnoremap <silent> n nzz
-nnoremap <silent> N Nzz
-nnoremap <silent> * *zz
-nnoremap <silent> # #zz
-nnoremap <silent> g* g*zz
+" Replace all is aliased to S.
+	nnoremap S :%s//g<Left><Left>
 
+" Compile document, be it groff/LaTeX/markdown/etc.
+	map <leader>c :w! \| !compiler "<c-r>%"<CR>
 
+" Open corresponding .pdf/.html or preview
+	map <leader>p :!opout <c-r>%<CR><CR>
+
+" Runs a script that cleans out tex build files whenever I close out of a .tex file.
+	autocmd VimLeave *.tex !texclear %
+
+" Ensure files are read as what I want:
+	let g:vimwiki_ext2syntax = {'.Rmd': 'markdown', '.rmd': 'markdown','.md': 'markdown', '.markdown': 'markdown', '.mdown': 'markdown'}
+	map <leader>v :VimwikiIndex<CR>
+	let g:vimwiki_list = [{'path': '~/.local/share/nvim/vimwiki', 'syntax': 'markdown', 'ext': '.md'}]
+	autocmd BufRead,BufNewFile /tmp/calcurse*,~/.calcurse/notes/* set filetype=markdown
+	autocmd BufRead,BufNewFile *.ms,*.me,*.mom,*.man set filetype=groff
+	autocmd BufRead,BufNewFile *.tex set filetype=tex
+
+" Save file as sudo on files that require root permission
+	cnoremap w!! execute 'silent! write !sudo tee % >/dev/null' <bar> edit!
+
+" Enable Goyo by default for mutt writing
+	autocmd BufRead,BufNewFile /tmp/neomutt* let g:goyo_width=80
+	autocmd BufRead,BufNewFile /tmp/neomutt* :Goyo | set bg=light
+	autocmd BufRead,BufNewFile /tmp/neomutt* map ZZ :Goyo\|x!<CR>
+	autocmd BufRead,BufNewFile /tmp/neomutt* map ZQ :Goyo\|q!<CR>
+
+" Automatically deletes all trailing whitespace and newlines at end of file on save. & reset cursor position
+ 	autocmd BufWritePre * let currPos = getpos(".")
+	autocmd BufWritePre * %s/\s\+$//e
+	autocmd BufWritePre * %s/\n\+\%$//e
+	autocmd BufWritePre *.[ch] %s/\%$/\r/e
+  	autocmd BufWritePre * cal cursor(currPos[1], currPos[2])
+
+" When shortcut files are updated, renew bash and ranger configs with new material:
+	autocmd BufWritePost bm-files,bm-dirs !shortcuts
+" Run xrdb whenever Xdefaults or Xresources are updated.
+	autocmd BufRead,BufNewFile Xresources,Xdefaults,xresources,xdefaults set filetype=xdefaults
+	autocmd BufWritePost Xresources,Xdefaults,xresources,xdefaults !xrdb %
+" Recompile dwmblocks on config edit.
+	autocmd BufWritePost ~/.local/src/dwmblocks/config.h !cd ~/.local/src/dwmblocks/; sudo make install && { killall -q dwmblocks;setsid -f dwmblocks }
+
+" Turns off highlighting on the bits of code that are changed, so the line that is changed is highlighted but the actual text that has changed stands out on the line and is readable.
+if &diff
+    highlight! link DiffText MatchParen
+endif
+
+" Function for toggling the bottom statusbar:
+let s:hidden_all = 0
+function! ToggleHiddenAll()
+    if s:hidden_all  == 0
+        let s:hidden_all = 1
+        set noshowmode
+        set noruler
+        set laststatus=0
+        set noshowcmd
+    else
+        let s:hidden_all = 0
+        set showmode
+        set ruler
+        set laststatus=2
+        set showcmd
+    endif
+endfunction
+nnoremap <leader>h :call ToggleHiddenAll()<CR>
 
 " =============================================================================
-" # Keyboard shortcuts 
+" # Language specifics
 " =============================================================================
+let g:LanguageClient_serverCommands = {
+\ 'rust': ['rust-analyzer'],
+\ }
 
-map <silent><C-f>	:NERDTree		<CR>
-map <silent><C-f>	:NERDTreeToggle		<CR>
+" rust
+let g:rustfmt_autosave = 1
+let g:rustfmt_emit_files = 1
+let g:rustfmt_fail_silently = 0
+let g:rust_clip_command = 'xclip -selection clipboard'
+
+" Completion
+" Better completion
+" menuone: popup even when there's only one match
+" noinsert: Do not insert text until a selection is made
+" noselect: Do not select, force user to select one from the menu
+set completeopt=menuone,noinsert,noselect
+" Better display for messages
+set cmdheight=2
+" You will have bad experience for diagnostic messages when it's default 4000.
+set updatetime=300
+
+" =============================================================================
+" # Keyboard shortcuts
+" =============================================================================
+" ; as :
+nnoremap ; :
+" Open hotkeys
+map <C-p> :Files<CR>
+nmap <leader>; :Buffers<CR>
+
+" Quick-save
+nmap <leader>w :w<CR>
 
 " Jump to start and end of line using the home row keys
 map H ^
 map L $
-
-
-" No arrow keys --- force yourself to use the home row
-"nnoremap <up> <nop>
-"nnoremap <down> <nop>
-"inoremap <up> <nop>
-"inoremap <down> <nop>
-inoremap <left> <nop>
-inoremap <right> <nop>
 
 " Left and right can switch buffers
 nnoremap <left> :bp<CR>
 nnoremap <right> :bn<CR>
 
 
-" =============================================================================
-" # Footer
-" =============================================================================
-
-" nvim
-if has('nvim')
-	runtime! plugin/python_setup.vim
-endif
+" NERDTree control
+" map <silent><C-f>	:NERDTree		<CR>
+" map <silent><C-f>	:NERDTreeToggle		<CR>
